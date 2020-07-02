@@ -10,3 +10,10 @@
 
 ## Clone
 + Clone this repo to your local machine using `https://github.com/GlebKasyak/React-native-cli.git`
+
+### Screenshots
+![alt-текст](https://github.com/GlebKasyak/React-native-cli/blob/master/src/assets/images/register_default.png "default register screen") 
+![alt-текст](https://github.com/GlebKasyak/React-native-cli/blob/master/src/assets/images/register_with_validation.png "register screen with validation")
+![alt-текст](https://github.com/GlebKasyak/React-native-cli/blob/master/src/assets/images/login_with_data.png "login screen")
+
+
