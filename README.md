@@ -6,7 +6,7 @@
 + list of cities
 + checkBox
 
-`Email, password, cities and checkBox fields have siple validation. After successful registration will be a redirect on Login screen.`
+`Email, password, cities and checkBox fields have simple validation. After successful registration will be a redirect on Login screen.`
 
 ## Clone
 + Clone this repo to your local machine using `https://github.com/GlebKasyak/React-native-cli.git`
