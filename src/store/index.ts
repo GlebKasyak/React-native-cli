@@ -1,6 +1,37 @@
-import { createStore } from "redux";
+import { observable, decorate, computed, action } from "mobx";
 
-import rootReducer from "./reducers";
+import { UserData } from "../interfaces/appInterfaces";
 
-export const store = createStore(rootReducer);
-export type StoreType = typeof store;
+class Store {
+    registered = false;
+    userData = {
+        email: "",
+        password: "",
+        city: "",
+        date: null
+    } as UserData;
+
+    get getUserData() {
+        const { date } = this.userData;
+        let formattedDate =  !!date && `${ date.getDate() } ${ date.getMonth() } ${ date.getFullYear() }`;
+
+        return {
+            ...this.userData,
+            date: formattedDate,
+            registered: this.registered
+        };
+    };
+
+    setUserData(data: UserData) {
+        this.userData = { ...data };
+        this.registered = true;
+    };
+};
+
+decorate(Store, {
+    userData: observable,
+    getUserData: computed,
+    setUserData: action
+});
+
+export default new Store();

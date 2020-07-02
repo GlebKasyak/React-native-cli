@@ -1,71 +1,86 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { Component } from "react";
+import { inject, observer } from "mobx-react";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useDispatch } from "react-redux";
 
 import RegisterScreen from "./RegisterScreen";
 
-import { appActions } from "../../store/actions/app.action";
 import { Navigation } from "../../shared/constants";
 import { AuthNavigation } from "../../navigation/interfaces";
 import { CityItemType, CITY_LIST } from "../../shared/CityList";
 import { FieldNames, getInputValidationState } from "../../shared/validation/validate";
 import { FromDataType, initialFormData } from "./InitialFormData";
+import { IState } from "../../interfaces/appInterfaces";
 
 type Props = {
-    navigation: StackNavigationProp<AuthNavigation, Navigation.Register>
+    navigation: StackNavigationProp<AuthNavigation, Navigation.Register>,
+    store: IState
 };
 
-const RegisterScreenContainer: FC<Props> = ({ navigation }) => {
-    const dispatch = useDispatch();
+type State = {
+    date: Date,
+    cityList: Array<CityItemType>,
+    checkBoxValue: { error: string, value: boolean },
+    formData: FromDataType
+};
 
-    const [date, setDate] = useState(new Date());
-    const [cityList, setCityList] = useState<Array<CityItemType>>([]);
-    const [checkBoxValue, setCheckBoxValue] = useState({
-        error: "",
-        value: false
-    });
-    const [formData, setFormData] = useState(initialFormData);
+@inject("store")
+@observer
+class RegisterScreenContainer extends Component<Props, State> {
+    isCancelled = false;
 
-    const handleChange = (value: string, field: string) => {
-        setFormData({
-            ...formData,
-            [field]: getInputValidationState({
-                input: formData[field as FieldNames],
-                value
-            })
-        })
+    state = {
+        date: new Date(),
+        cityList: [],
+        checkBoxValue: {
+            error: "",
+            value: false
+        },
+        formData: initialFormData
     };
 
-    const handleDateChange = (event: Event, currentDate?: Date) => {
-        setDate(currentDate || date);
-    };
+    async componentDidMount() {
+        const data = await new Promise(resolve => {
+            setTimeout(() => {
+                resolve(CITY_LIST)
+            }, 2000);
+        }) as Array<CityItemType>;
 
-    useEffect(() => {
-        let isCancelled = false;
-        const getDataList = async () => {
-            const data = await new Promise(resolve => {
-                setTimeout(() => {
-                    resolve(CITY_LIST)
-                }, 2000);
-            }) as Array<CityItemType>;
-
-            if(!isCancelled) {
-                setCityList(data)
-            }
+        if(!this.isCancelled) {
+            this.setState({ cityList: data })
         }
-
-        getDataList();
-
-        return () => {
-            isCancelled = true;
-        }
-    }, []);
-
-    const toggleHandler = () => {
-        setCheckBoxValue({ error: "", value: !checkBoxValue.value });
     };
 
-    const handlePress = () => {
+    componentWillUnmount() {
+        this.isCancelled = true;
+    };
+
+    handleChange = (value: string, field: string) => {
+        this.setState((state: State) => ({
+            ...state,
+            formData: {
+                ...state.formData,
+                [field]: getInputValidationState({
+                    input: this.state.formData[field as FieldNames],
+                    value
+                })
+            } as FromDataType
+        }));
+    };
+
+    handleDateChange = (event: Event, currentDate?: Date) => {
+        this.setState({ date: currentDate || this.state.date });
+    };
+
+    toggleHandler = () => {
+        this.setState({
+            checkBoxValue: { error: "", value: !this.state.checkBoxValue.value }
+        });
+    };
+
+    handlePress = () => {
+        const { formData, checkBoxValue, date } = this.state;
+        const { store, navigation } = this.props;
+
         const updatedInputs = {} as FromDataType;
 
         for(const key in formData) {
@@ -76,31 +91,37 @@ const RegisterScreenContainer: FC<Props> = ({ navigation }) => {
         };
 
         if(!checkBoxValue.value) {
-            setCheckBoxValue({ ...checkBoxValue, error: "Is required" })
+            this.setState((state: State) => ({
+                checkBoxValue: { ...state.checkBoxValue, error: "Is required" },
+                formData: updatedInputs
+            }));
         };
 
-        setFormData(updatedInputs);
         if(Object.values(updatedInputs).some(field => !field.error)) {
-            dispatch(appActions.setAppData({
-                city: formData.city.value,
+            store.setUserData({
                 date,
+                city: formData.city.value,
                 email: formData.email.value,
-                password: formData.password.value
-            }));
+                password: formData.password.value,
+            });
             navigation.navigate(Navigation.Login)
         }
     };
 
-    return <RegisterScreen
-        onChange={ handleChange }
-        onDataChange={ handleDateChange }
-        onToggle={ toggleHandler }
-        onPress={ handlePress }
-        date={ date }
-        cityList={ cityList }
-        formData={ formData }
-        checkBoxValue={ checkBoxValue }
-    />
+   render() {
+       const { date, cityList, formData, checkBoxValue } = this.state;
+
+       return <RegisterScreen
+           onChange={ this.handleChange }
+           onDataChange={ this.handleDateChange }
+           onToggle={ this.toggleHandler }
+           onPress={ this.handlePress }
+           date={ date }
+           cityList={ cityList }
+           formData={ formData }
+           checkBoxValue={ checkBoxValue }
+       />
+   }
 };
 
 export default RegisterScreenContainer;

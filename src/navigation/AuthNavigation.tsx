@@ -6,7 +6,6 @@ import { AuthHeader } from "../components";
 import { Colors } from "../shared/styles";
 import { Navigation } from "../shared/constants";
 
-
 const Stack = createStackNavigator();
 
 const AuthNavigation = () => (
