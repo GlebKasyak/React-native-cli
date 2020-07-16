@@ -35,7 +35,7 @@ const CityList: FC<Props> = ({ setCity, list, currentCity, error }) => (
 
             }
         </View>
-        { !!error && <ErrorMessage message={ error } /> }
+        { error && <ErrorMessage message={ error } /> }
     </>
 );
 

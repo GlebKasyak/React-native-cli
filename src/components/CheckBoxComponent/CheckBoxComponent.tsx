@@ -20,7 +20,7 @@ const CheckBoxComponent: FC<Props> = ({ value, error, onChange }) => (
             onValueChange={ onChange }
             tintColors={{ true: Colors.blue }}
         />
-        { !!error && <ErrorMessage message={ error } /> }
+        { error && <ErrorMessage message={ error } /> }
     </View>
 );
 

@@ -23,7 +23,7 @@ const TextField: FC<Props> = ({ onChange, error, label, fieldName, placeholder, 
             placeholder={ placeholder }
             { ...props }
         />
-        { !!error && <ErrorMessage message={ error } /> }
+        { error && <ErrorMessage message={ error } /> }
     </View>
 );
 
