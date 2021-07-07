@@ -1,10 +1,10 @@
 import React from "react";
-import { Provider } from "react-redux";
+import { Provider } from "mobx-react";
 import { StatusBar, YellowBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { AuthNavigation } from "./src/navigation";
-import { store } from "./src/store";
+import store from "./src/store";
 
 YellowBox.ignoreWarnings([
     "VirtualizedLists should never be nested",
@@ -13,8 +13,8 @@ YellowBox.ignoreWarnings([
 const App = () => (
     <Provider store={ store } >
         <NavigationContainer>
-            <StatusBar barStyle="dark-content" />
-            <AuthNavigation />
+            <StatusBar barStyle="dark-content"/>
+            <AuthNavigation/>
         </NavigationContainer>
     </Provider>
 );
